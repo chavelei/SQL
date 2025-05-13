@@ -1,0 +1,47 @@
+--Wrote SQL queries in SQLiteStudio to analyze multi-table sales and customer data for trends and performance insights.
+
+--Number of unique orders placed in January
+SELECT COUNT(DISTINCT orderID) AS unique_jan_orders
+FROM BIT_DB.JanSales
+WHERE length(orderID) = 6
+AND orderid != 'Order ID';
+
+--Number of unique iPhone orders placed in January
+SELECT COUNT(DISTINCT orderID) AS unique_iphone_orders
+FROM BIT_DB.JanSales
+WHERE length(orderID) = 6
+AND orderID != 'Order ID'
+AND product = 'iPhone';
+
+-Customer account numbers for all the orders that were placed in February
+SELECT c.acctnum
+FROM BIT_DB.customers c
+INNER JOIN BIT_DB.FebSales f
+ON c.order_id = f.orderID
+WHERE length(orderID) = 6
+AND orderID != 'Order ID';
+
+--Cheapest product sold in January and the price
+SELECT DISTINCT Product, price
+FROM BIT_DB.JanSales
+ORDER BY price ASC
+LIMIT 1;
+
+--Total revenue for each product sold in January
+SELECT Product, SUM(quantity)*price AS total_revenue
+FROM Bit_DB.JanSales
+GROUP BY product;
+
+--Products that were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what the total revenue was
+SELECT product, location, SUM(Quantity) AS quantity, SUM(Quantity)*price AS revenue
+FROM BIT_DB.FebSales
+WHERE location = '548 Lincoln St, Seattle, WA 98101';
+
+--Number of customers that ordered more than 2 products at a time in February, and what the average amount spent for those customers was
+SELECT COUNT(DISTINCT c.acctnum)AS num_of_customers, AVG(f.quantity * f.price) AS avg_spent
+FROM BIT_DB.customers c
+LEFT JOIN BIT_DB.FebSales f
+ON c.order_id=f.orderID
+WHERE f.Quantity > 2
+AND length(order_id)= 6
+AND order_id != 'Order ID';
